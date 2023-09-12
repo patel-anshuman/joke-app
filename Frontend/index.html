@@ -84,6 +84,7 @@
       const keywordInput = document.getElementById("keyword");
       const fetchButton = document.getElementById("fetchJoke");
       const jokeDisplay = document.getElementById("jokeDisplay");
+      const baseURL = "http://localhost:8080";
 
       fetchButton.addEventListener("click", () => {
         const keyword = keywordInput.value;
@@ -93,12 +94,12 @@
         }
 
         // Make a request to your backend to fetch a joke
-        fetch(`/joke?keyword=${keyword}`)
+        fetch(`${baseURL}/joke?keyword=${keyword}`)
           .then((response) => response.json())
           .then((data) => {
             if (data.joke) {
               // Append the received joke to the display area
-              jokeDisplay.innerHTML += `<p>${data.joke}</p>`;
+              jokeDisplay.innerHTML = `<p>${data.joke}</p>`;
             } else {
               alert("No joke found for the given keyword.");
             }
