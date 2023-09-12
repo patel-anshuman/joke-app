@@ -1,40 +1,48 @@
-// app.js
-
-const express = require('express');
+const express = require("express");
+const path = require("path");
 require("dotenv").config();
-const { OpenAIApi } = require('openai');
+const { OpenAIApi, Configuration } = require("openai");
 const cors = require("cors");
-
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Set up your OpenAI API key
-const openai = new OpenAIApi({ key: process.env.OPENAI_API_KEY });
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY, // Use apiKey instead of key
+});
+
+const openai = new OpenAIApi(configuration);
 
 app.use(express.json());
 app.use(cors());
 
-app.get('/joke', async (req, res) => {
+app.use(express.static(path.join(__dirname, 'Frontend')));
+
+app.get("/joke", async (req, res) => {
   try {
     const { keyword } = req.query;
 
-    // Define the prompt for ChatGPT
     const prompt = `Tell me a joke about ${keyword}`;
 
-    // Generate a joke using ChatGPT
     const response = await openai.createCompletion({
-      engine: 'davinci',
+      engine: "gpt-3.5-turbo",
       prompt,
-      max_tokens: 50, // You can adjust the length of the response
+      max_tokens: 50,
     });
 
-    const joke = response.choices[0].text;
+    const joke = response.choices[0].text.trim();
     res.json({ joke });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while generating the joke.' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while generating the joke." });
   }
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
 });
 
 app.listen(port, () => {
