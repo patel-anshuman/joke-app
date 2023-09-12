@@ -7,13 +7,6 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Set up your OpenAI API key
-const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY, // Use apiKey instead of key
-});
-
-const openai = new OpenAIApi(configuration);
-
 app.use(express.json());
 app.use(cors());
 
@@ -22,8 +15,12 @@ app.use(express.static(path.join(__dirname, 'Frontend')));
 app.get("/joke", async (req, res) => {
   try {
     const { keyword } = req.query;
-
     const prompt = `Tell me a joke about ${keyword}`;
+
+    const configuration = new Configuration({
+        apiKey: process.env.OPENAI_API_KEY, // Use apiKey instead of key
+    });
+    const openai = new OpenAIApi(configuration);
 
     const response = await openai.createCompletion({
       engine: "gpt-3.5-turbo",
